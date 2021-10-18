@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="action.js"></script>
+    </head>
+    <title>
+        web-project-1
+    </title>
+    <body>  
+        <p>Hello dear user!</p>  
+        
+        <form>
+        <label for="strToSha256">input1 (convert to SHA-256)</label><br>
+
+        <input type = "text" id="inputFromStr" minlength="8">
+        <br>
+        <button type = "button" onclick="set()">Convert to Sha256</button>
+        <br>
+        <form>
+        <input type = "text" id="output1" disabled>
+        </form>
+
+        <br><br>
+
+        
+        <form>
+        <label for="sha256ToStr">input2 (Convert To Original String)</label><br>
+
+        <input type = "text" id="inputFromSha" minlength="8">
+        <br>
+        <button type = "button" onclick="get()">Get Original String</button>
+        <br>
+        <form>
+        <input type = "text" id="output2" disabled>
+        </form>
+    </body>
+</html>
