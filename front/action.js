@@ -6,36 +6,44 @@ async function sha256(message) {
     return hashHex;
 }
 
+async function computeSha(){
+    const id = "inputFromStr"
+    const x = document.getElementById(id).value
+    const out = await sha256(x)
+    document.getElementById("output1").value = out
+    return 0
+}
+
 async function set_nodejs(){
-    var id = "inputFromStr"
-    var x = document.getElementById(id).value
-    toStrX = x.toString()
+    const id = "inputFromStr"
+    const x = document.getElementById(id).value
+    const toStrX = x.toString()
     if (toStrX.length < 8 ){
         redFlagRise(id)
-        msg = 'Not Enough Chars(At least 8)'
+        const msg = 'Not Enough Chars(At least 8)'
         alert(msg)
-        document.getElementById("output1").value = ''
+        // document.getElementById("output1").value = ''
         return -1
     }
     redFlagClear(id)
-    var out = await sha256(x)
+    const out = await sha256(x)
     document.getElementById("output1").value = out
     return 0
 }
 
 async function set_golang(){
-    var id = "inputFromStr"
-    var x = document.getElementById(id).value
-    toStrX = x.toString()
+    const id = "inputFromStr"
+    const x = document.getElementById(id).value
+    const toStrX = x.toString()
     if (toStrX.length < 8 ){
         redFlagRise(id)
-        msg = 'Not Enough Chars(At least 8)'
+        const msg = 'Not Enough Chars(At least 8)'
         alert(msg)
-        document.getElementById("output1").value = ''
+        // document.getElementById("output1").value = ''
         return -1
     }
     redFlagClear(id)
-    var out = await sha256(x)
+    const out = await sha256(x)
     document.getElementById("output1").value = out
     return 0
 }
@@ -43,22 +51,22 @@ async function set_golang(){
 
 async function get_nodejs(){
     id = "inputFromSha"
-    var sha = document.getElementById(id).value
+    const sha = document.getElementById(id).value
     document.getElementById('output2').value = 'Get function Working'
 }
 
 async function get_golang(){
     id = "inputFromSha"
-    var sha = document.getElementById(id).value
+    const sha = document.getElementById(id).value
     document.getElementById('output2').value = 'Get function Working'
 }
 
 function redFlagRise(id) {
-    var inputVal = document.getElementById(id);
+    const inputVal = document.getElementById(id);
     inputVal.style.backgroundColor = '#FF000044';
 }
 
 function redFlagClear(id) {
-    var inputVal = document.getElementById(id);
+    const inputVal = document.getElementById(id);
     inputVal.style.backgroundColor = "white";
 }

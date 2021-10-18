@@ -12,11 +12,11 @@
             <h1>Hello dear user!</h1>  
             
             <form>
-            <label for="strToSha256">input1 (convert to SHA-256)</label><br>
+            <label for="strToSha256">input1 - convert to SHA-256</label><br>
 
-            <input type = "text" id="inputFromStr" minlength="8">
-            <button type = "button" onclick="set_nodejs()">nodejs</button>
-            <button type = "button" onclick="set_golang()">golang</button>
+            <input onkeyup="computeSha()" type = "text" id="inputFromStr" minlength="8">
+            <button type = "button" onclick="set_nodejs()">via nodejs</button>
+            <button type = "button" onclick="set_golang()">via golang</button>
             
             <form>
             <input type = "text" id="output1" disabled>
@@ -26,11 +26,11 @@
             <br><br>
             
             <form>
-            <label for="sha256ToStr">input2 (Convert To Original String)</label><br>
+            <label for="sha256ToStr">input2 - Convert To Original String)</label><br>
 
             <input type = "text" id="inputFromSha" minlength="8">
-            <button type = "button" onclick="get_nodejs()">nodejs</button>
-            <button type = "button" onclick="get_golang()">golang</button>
+            <button type = "button" onclick="get_nodejs()">via nodejs</button>
+            <button type = "button" onclick="get_golang()">via golang</button>
 
             <form>
             <input type = "text" id="output2" disabled>
