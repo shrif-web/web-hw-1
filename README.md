@@ -1,4 +1,6 @@
 # Web-Project-1
-amir mohammad mohammadi js back-end
 
-sajad faghfoor maghrebi frontend
+| contributors | roles | telegram |
+| --------------|--------- | ------ 
+| amir mohammad mohammadi | backend :: js| 
+| Sajad Faghfoor Maghrebi | frontend | @sfmqrb |
