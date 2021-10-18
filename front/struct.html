@@ -15,7 +15,8 @@
             <label for="strToSha256">input1 (convert to SHA-256)</label><br>
 
             <input type = "text" id="inputFromStr" minlength="8">
-            <button type = "button" onclick="set()">Convert to Sha256</button>
+            <button type = "button" onclick="set_nodejs()">nodejs</button>
+            <button type = "button" onclick="set_golang()">golang</button>
             
             <form>
             <input type = "text" id="output1" disabled>
@@ -28,7 +29,9 @@
             <label for="sha256ToStr">input2 (Convert To Original String)</label><br>
 
             <input type = "text" id="inputFromSha" minlength="8">
-            <button type = "button" onclick="get()">Get Original String</button>
+            <button type = "button" onclick="get_nodejs()">nodejs</button>
+            <button type = "button" onclick="get_golang()">golang</button>
+
             <form>
             <input type = "text" id="output2" disabled>
             </form>
