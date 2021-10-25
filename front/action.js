@@ -22,7 +22,6 @@ async function set_nodejs(){
         redFlagRise(id)
         const msg = 'Not Enough Chars(At least 8)'
         alert(msg)
-        // document.getElementById("output1").value = ''
         return -1
     }
     redFlagClear(id)
@@ -39,7 +38,6 @@ async function set_golang(){
         redFlagRise(id)
         const msg = 'Not Enough Chars(At least 8)'
         alert(msg)
-        // document.getElementById("output1").value = ''
         return -1
     }
     redFlagClear(id)
