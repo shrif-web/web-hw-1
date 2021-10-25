@@ -19,12 +19,17 @@ client.get("key", redis.print);
 
 // New app using express module
 const app = express();
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(bodyParser.json())
+// app.use(express.json());
 
 app.get("/", function (req, res) {
-    res.sendFile(__dirname + "/test.html");
+    res.sendFile(__dirname + "/struct.html");
+});
+app.get('/action.js', function(req, res) {
+    res.sendFile(__dirname + "/" + "action.js");
+});
+app.get('/style.css', function(req, res) {
+    res.sendFile(__dirname + "/" + "style.css");
 });
 
 app.post("/", function (req, res) {
@@ -41,15 +46,15 @@ app.post("/", function (req, res) {
             res.send(r)
         } else {
             hash = crypto.createHash('sha256').update(request.str).digest('base64');
-            r.hashed = hash
+            r.hashed = request.hash
             client.exists(hash, function (err, reply) {
                 // data is null if the key doesn't exist
                 if (reply !== 1) {
                     r.result = ResultsEnum.outDB
-                    client.set(hash, request.str, redis.print)
+                    client.set(request.hashedString, request.str, redis.print)
                 } else {
                     r.result = ResultsEnum.inDB
-                    client.set(hash, request.str, redis.print)
+                    client.set(request.hashedString, request.str, redis.print)
                 }
                 res.send(r);
             });
