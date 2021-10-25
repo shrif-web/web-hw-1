@@ -1,3 +1,16 @@
+import axios from "axios";
+
+const localHost = 'http://127.0.0.1';
+const port = '5500';
+
+const makePostRequest = async (path, data) => {
+  return await axios.post(host + path, data);
+};
+
+const makeGetRequest = async (path) => {
+  return await await axios.get(host + path);
+};
+
 async function sha256(message) {
     const msgBuffer = new TextEncoder().encode(message);                    
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -9,12 +22,12 @@ async function sha256(message) {
 async function computeSha(){
     const id = "inputFromStr"
     const x = document.getElementById(id).value
-    const out = await sha256(x)
-    document.getElementById("output1").value = out
+    const hashedStr = await sha256(x)
+    document.getElementById("output1").value = hashedStr
     return 0
 }
 
-async function set_nodejs(){
+async function set(GoOrNode){
     const id = "inputFromStr"
     const x = document.getElementById(id).value
     const toStrX = x.toString()
@@ -25,38 +38,66 @@ async function set_nodejs(){
         return -1
     }
     redFlagClear(id)
-    const out = await sha256(x)
-    document.getElementById("output1").value = out
-    return 0
-}
+    const hashedStr = await sha256(x)
+    document.getElementById("output1").value = hashedStr
 
-async function set_golang(){
-    const id = "inputFromStr"
-    const x = document.getElementById(id).value
-    const toStrX = x.toString()
-    if (toStrX.length < 8 ){
-        redFlagRise(id)
-        const msg = 'Not Enough Chars(At least 8)'
-        alert(msg)
-        return -1
+    const jsonReq = {
+        "requestType": 0,
+        "str": toStrX,
+        "hashedString": hashedStr,
     }
-    redFlagClear(id)
-    const out = await sha256(x)
-    document.getElementById("output1").value = out
+
+    switch(GoOrNode) {
+        case "node":
+            const path = localHost+':'+port;
+            const extention = '/node/sha256';
+            const fpath = path+extention
+            const res = await makePostRequest(fpath, jsonReq)
+        case "go":
+            const path = localHost+':'+port;
+            const extention = '/go/sha256';
+            const fpath = path+extention
+            const res = await makePostRequest(fpath, jsonReq)
+        default:
+            console.log("Not a valid path(set)")
+            return -1;
+    }    
     return 0
 }
 
 
-async function get_nodejs(){
-    id = "inputFromSha"
-    const sha = document.getElementById(id).value
-    document.getElementById('output2').value = 'Get function Working'
-}
 
-async function get_golang(){
+async function get(GoOrNode){
     id = "inputFromSha"
-    const sha = document.getElementById(id).value
-    document.getElementById('output2').value = 'Get function Working'
+    const hashedStr = document.getElementById(id).value
+
+    switch(GoOrNode) {
+    case "node":
+        const path = localHost+':'+port;
+        const extention = '/node/sha256';
+        const fpath = path+extention
+        const res = await makeGetRequest(fpath)
+    case "go":
+        const path = localHost+':'+port;
+        const extention = '/go/sha256';
+        const fpath = path+extention
+        const res = await makeGetRequest(fpath)
+    default:
+        console.log("Not a valid path(get)")
+        return -1
+    }    
+    switch (res.result){
+        case 0: 
+            console.log("Short String")
+        case 1: 
+            console.log("inDB");
+            document.getElementById('output2').value = res.str;
+        case 2: 
+            console.log("outDB");
+        default:
+            console.log('Not a valid res.result(get)');
+    }
+    return 0;
 }
 
 function redFlagRise(id) {
