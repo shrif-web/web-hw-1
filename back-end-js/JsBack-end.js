@@ -2,12 +2,12 @@ const express = require("express");
 const bodyParser = require("body-parser")
 const redis = require("redis")
 const crypto = require("crypto")
-// sajad added this
+// sajad added this////////////////////
 var cors = require('cors')
 var path = require('path');
-// sajad added this
 const app = express();
 app.use(cors())
+// sajjad added above code ////////////
 
 const client = redis.createClient()
 
