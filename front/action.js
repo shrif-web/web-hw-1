@@ -1,27 +1,15 @@
 const localHost = 'http://localhost';
 const port = '8080';
 
-const makePostRequest = async (path, data) => {
-    // return await axios.post(localHost + path, data);
-    // return await axios.post(path, {
-    //     params:{
-    //         "str": data
-    //     },
-    //     headers: {
-    //         'Content-Type': 'application/x-www-form-urlencoded',
-    //         'Content-Length': data.length
-    //     }
-    // });
-// Send a POST request
-     
-       return await axios(path, {
-              method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-              params: {'str': data}
-            })  
+const makePostRequest = async (path, data) => {     
+    return await axios(path, {
+            method: 'POST',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            params: {'str': data}
+        })  
 };
 
 const makeGetRequest = async (path, hashedStr) => {
@@ -72,8 +60,8 @@ async function set(GoOrNode) {
         case "node":
             console.log(GoOrNode)
             var path = localHost + ':' + port;
-            var extention = '/sha256';
-            // var extention = '';
+            // var extention = '/sha256';
+            var extention = '';
             var fpath = path + extention
             console.log(fpath)
             console.log("post request 58")
@@ -107,7 +95,7 @@ async function get(GoOrNode) {
         case "node":
             var path = localHost + ':' + port;
             var extention = '/sha256';
-            var extention = '/a';
+            var extention = '/';
             var fpath = path + extention
             var res = await makeGetRequest(fpath, hashedStr)
             break
