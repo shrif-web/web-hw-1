@@ -1,5 +1,5 @@
 const localHost = 'http://localhost';
-const port = '8080';
+const port = '80';
 
 const makePostRequest = async (path, data) => {     
     return await axios(path, {
@@ -60,8 +60,7 @@ async function set(GoOrNode) {
         case "node":
             console.log(GoOrNode)
             var path = localHost + ':' + port;
-            // var extention = '/sha256';
-            var extention = '';
+            var extention = '/node/sha256';
             var fpath = path + extention
             console.log(fpath)
             console.log("post request 58")
@@ -69,7 +68,7 @@ async function set(GoOrNode) {
             break
         case "go":
             var path = localHost + ':' + port;
-            var extention = '/sha256';
+            var extention = '/go/sha256';
             var fpath = path + extention
             console.log(toStrX)
             var res = await makePostRequest(fpath, toStrX)
@@ -94,14 +93,13 @@ async function get(GoOrNode) {
     switch (GoOrNode) {
         case "node":
             var path = localHost + ':' + port;
-            var extention = '/sha256';
-            var extention = '/';
+            var extention = '/node/sha256';
             var fpath = path + extention
             var res = await makeGetRequest(fpath, hashedStr)
             break
         case "go":
             var path = localHost + ':' + port;
-            var extention = '/sha256';
+            var extention = '/go/sha256';
             var fpath = path + extention
             var res = await makeGetRequest(fpath, hashedStr)
             break

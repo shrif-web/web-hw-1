@@ -47,7 +47,7 @@ func main() {
 		if r.Method == "OPTIONS" {
 			w.Header().Set("Access-Control-Allow-Headers", "Authorization") // You can add more headers here if needed
 		} else {
-			if r.URL.Path != "/sha256" {
+			if r.URL.Path != "/" {
 				http.Error(w, "404 not found.", http.StatusNotFound)
 				return
 			}
@@ -120,7 +120,7 @@ func main() {
 
 	handler := cors.Default().Handler(mux)
 
-	if err := http.ListenAndServe(":8080", handler); err != nil {
+	if err := http.ListenAndServe(":81", handler); err != nil {
 		log.Fatal(err)
 	}
 }
