@@ -1,9 +1,27 @@
-const localHost = 'http://127.0.0.1';
-const port = '3000';
+const localHost = 'http://localhost';
+const port = '8080';
 
 const makePostRequest = async (path, data) => {
     // return await axios.post(localHost + path, data);
-    return await axios.post(path, data);
+    // return await axios.post(path, {
+    //     params:{
+    //         "str": data
+    //     },
+    //     headers: {
+    //         'Content-Type': 'application/x-www-form-urlencoded',
+    //         'Content-Length': data.length
+    //     }
+    // });
+// Send a POST request
+     
+       return await axios(path, {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              params: {'str': data}
+            })  
 };
 
 const makeGetRequest = async (path, hashedStr) => {
@@ -55,18 +73,19 @@ async function set(GoOrNode) {
             console.log(GoOrNode)
             var path = localHost + ':' + port;
             var extention = '/sha256';
-            var extention = '';
+            // var extention = '';
             var fpath = path + extention
             console.log(fpath)
             console.log("post request 58")
-            var res = await makePostRequest(fpath, jsonReq)
+            var res = await makePostRequest(fpath, toStrX)
             break
         case "go":
             var path = localHost + ':' + port;
             var extention = '/sha256';
             var fpath = path + extention
-            console.log("post request 64")
-            var res = await makePostRequest(fpath, jsonReq)
+            console.log(toStrX)
+            var res = await makePostRequest(fpath, toStrX)
+            console.log(res)
             break
         default:
             console.log("Not a valid path(set)")
@@ -87,31 +106,29 @@ async function get(GoOrNode) {
     switch (GoOrNode) {
         case "node":
             var path = localHost + ':' + port;
-            var extention = '/node/sha256';
+            var extention = '/sha256';
             var extention = '/a';
             var fpath = path + extention
             var res = await makeGetRequest(fpath, hashedStr)
             break
         case "go":
             var path = localHost + ':' + port;
-            var extention = '/go/sha256';
+            var extention = '/sha256';
             var fpath = path + extention
-            var res = await makeGetRequest(fpath, getRequest)
+            var res = await makeGetRequest(fpath, hashedStr)
             break
         default:
             console.log("Not a valid path(get)")
             return -1
     }
-    switch (parseInt(res.data.result)) {
+    console.log(res.data.value)
+    switch (parseInt(res.data.value)) {
         case 0:
-            console.log("Short String")
+            console.log("error(Not Valid Request)")
             break
         case 1:
             console.log("inDB");
             document.getElementById('output2').value = res.data.str;
-            break
-        case 2:
-            console.log("outDB");
             break
         default:
             console.log('Not a valid res.result(get)');
