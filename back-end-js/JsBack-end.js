@@ -38,9 +38,10 @@ app.get('/style.css', function(req, res) {
 });
 
 app.post("/", function (req, res) {
+    console.log(req.url)
     let request = req.body
     request.requestType = parseInt(request.requestType)
-    console.log(request)
+    console.log("*****", request)
     let r = new Respond();
 
     if (request.requestType === RequestEnum.hashForSave) {
