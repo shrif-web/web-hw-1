@@ -1,101 +1,133 @@
-const express = require("express");
-const bodyParser = require("body-parser")
-const redis = require("redis")
-const cors = require("cors")
-const crypto = require("crypto")
-const path = require("path")
-const app = express();
-app.use(cors());
+const localHost = 'http://localhost';
+const port = '80';
 
-const port = 3000
+const makePostRequest = async (path, data) => {     
+    return await axios(path, {
+            method: 'POST',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            params: {'str': data}
+        })  
+};
 
-const client = redis.createClient()
-
-const ResultsEnum = Object.freeze({
-    error: 0,
-    inDB: 1
-})
-const RequestEnum = Object.freeze({
-    hashForSave: 0,
-    getDB: 1
-})
-
-app.use(bodyParser.json())
-app.post("/", function (req, res) {
-    try {
-        let request = req.query
-        console.log(request)
-        let r = new Respond();
-        let hash;
-        if (request.str < 8) {
-            r.value = ResultsEnum.error
-            res.statusCode = 411 //length required
-            res.send(r)
-        } else {
-            hash = crypto.createHash('sha256').update(request.str).digest('hex');
-            r.hashed = request.hash
-            client.exists(hash, function (err, reply) {
-                // data is null if the key doesn't exist
-                if (reply !== 1) {
-                    r.value = ResultsEnum.error
-                    client.set(hash, request.str, redis.print)
-                } else {
-                    r.value = ResultsEnum.inDB
-                    client.set(hash, request.str, redis.print)
-                }
-                res.statusCode = 201
-                res.send(r);
-            });
+const makeGetRequest = async (path, hashedStr) => {
+    return await axios.get(path, {
+        params:{
+            "hashedString": hashedStr
         }
-    } catch (e) {
-        sendBadRequest(res)
-    }
-});
-app.get('/', (req, res) => {
-    try {
-        let request = req.query
-        console.log(request)
-        let r = new Respond();
-        client.get(request.hashedString, function (err, data) {
-            // data is null if the key doesn't exist
-            console.log(data)
-            if (err || data == null) {
-                res.statusCode = 204 //no content
-                r.value = ResultsEnum.error
-            } else {
-                r.str = data
-                res.statusCode = 200
-                r.value = ResultsEnum.inDB
-            }
-            res.send(r);
-        });
-    } catch (e) {
-        sendBadRequest(res)
-    }
-})
+    });
+};
 
-function sendBadRequest(res) {
-    res.statusCode = 400
-    let r = new Respond();
-    r.result = ResultsEnum.error
-    res.send(r)
+async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
 }
 
-app.use((req, res, next) => {
-    res.status(404).send("<h1>Page not found on the server</h1>")
-})
-
-app.listen(port, function () {
-    console.log("server is running on port", port);
-})
-
-
-class Respond {
-    str
-    value
+async function computeSha() {
+    const id = "inputFromStr"
+    const x = document.getElementById(id).value
+    const hashedStr = await sha256(x)
+    document.getElementById("output1").value = hashedStr
+    return 0
 }
 
-class Request {
-    str
-    hashedString
+async function set(GoOrNode) {
+    console.log("first request")
+    const id = "inputFromStr"
+    const x = document.getElementById(id).value
+    const toStrX = x.toString()
+    if (toStrX.length < 8) {
+        redFlagRise(id)
+        const msg = 'Not Enough Chars(At least 8)'
+        alert(msg)
+        return -1
+    }
+    redFlagClear(id)
+    const hashedStr = await sha256(x)
+    document.getElementById("output1").value = hashedStr
+
+    const jsonReq = {
+        "str": toStrX,
+        "hashedString": hashedStr,
+    }
+
+    switch (GoOrNode) {
+        case "node":
+            console.log(GoOrNode)
+            var path = localHost + ':' + port;
+            var extention = '/node/sha256';
+            var fpath = path + extention
+            console.log(fpath)
+            console.log("post request 58")
+            var res = await makePostRequest(fpath, toStrX)
+            break
+        case "go":
+            var path = localHost + ':' + port;
+            var extention = '/go/sha256';
+            var fpath = path + extention
+            console.log(toStrX)
+            var res = await makePostRequest(fpath, toStrX)
+            console.log(res)
+            break
+        default:
+            console.log("Not a valid path(set)")
+            return -1;
+    }
+    return 0
+}
+
+
+async function get(GoOrNode) {
+    console.log("second request")
+    id = "inputFromSha"
+    const hashedStr = document.getElementById(id).value
+    const getRequest = {
+        "str": "",
+        "hashedString": hashedStr,
+    }
+    switch (GoOrNode) {
+        case "node":
+            var path = localHost + ':' + port;
+            var extention = '/node/sha256';
+            var fpath = path + extention
+            var res = await makeGetRequest(fpath, hashedStr)
+            break
+        case "go":
+            var path = localHost + ':' + port;
+            var extention = '/go/sha256';
+            var fpath = path + extention
+            var res = await makeGetRequest(fpath, hashedStr)
+            break
+        default:
+            console.log("Not a valid path(get)")
+            return -1
+    }
+    console.log(res.data.value)
+    switch (parseInt(res.data.value)) {
+        case 0:
+            console.log("error(Not Valid Request)")
+            break
+        case 1:
+            console.log("inDB");
+            document.getElementById('output2').value = res.data.str;
+            break
+        default:
+            console.log('Not a valid res.result(get)');
+    }
+    return 0;
+}
+
+function redFlagRise(id) {
+    const inputVal = document.getElementById(id);
+    inputVal.style.backgroundColor = '#FF000044';
+}
+
+function redFlagClear(id) {
+    const inputVal = document.getElementById(id);
+    inputVal.style.backgroundColor = "white";
 }
