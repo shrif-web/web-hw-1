@@ -7,16 +7,13 @@ const path = require("path")
 const app = express();
 app.use(cors());
 
-
-const port = 8080
+const port = 3000
 
 const client = redis.createClient()
 
 const ResultsEnum = Object.freeze({
-    shortString: 0,
-    inDB: 1,
-    outDB: 2,
-    error: 3
+    error: 0,
+    inDB: 1
 })
 const RequestEnum = Object.freeze({
     hashForSave: 0,
@@ -24,52 +21,37 @@ const RequestEnum = Object.freeze({
 })
 
 app.use(bodyParser.json())
-//temporary should be done by nginx
-// app.get("/", function (req, res) {
-//     res.sendFile(__dirname + "/struct.html");
-// });
-// app.get('/action.js', function(req, res) {
-//     res.sendFile(__dirname + "/" + "action.js");
-// });
-// app.get('/style.css', function(req, res) {
-//     res.sendFile(__dirname + "/" + "style.css");
-// });
-
 app.post("/", function (req, res) {
     try {
-
-        let request = req.body
+        let request = req.query
         console.log(request)
         let r = new Respond();
-        console.log(req.body)
         let hash;
-        if (req.body.str.toString().length < 8) {
-            r.result = ResultsEnum.shortString
+        if (request.str < 8) {
+            r.value = ResultsEnum.error
             res.statusCode = 411 //length required
             res.send(r)
         } else {
-            hash = crypto.createHash('sha256').update(request.str).digest('base64');
+            hash = crypto.createHash('sha256').update(request.str).digest('hex');
             r.hashed = request.hash
             client.exists(hash, function (err, reply) {
                 // data is null if the key doesn't exist
                 if (reply !== 1) {
-                    r.result = ResultsEnum.outDB
-                    client.set(request.hashedString, request.str, redis.print)
+                    r.value = ResultsEnum.error
+                    client.set(hash, request.str, redis.print)
                 } else {
-                    r.result = ResultsEnum.inDB
-                    client.set(request.hashedString, request.str, redis.print)
+                    r.value = ResultsEnum.inDB
+                    client.set(hash, request.str, redis.print)
                 }
                 res.statusCode = 201
                 res.send(r);
             });
         }
-    }
-    catch (e) {
+    } catch (e) {
         sendBadRequest(res)
     }
 });
 app.get('/', (req, res) => {
-    a = 1
     try {
         let request = req.query
         console.log(request)
@@ -79,11 +61,11 @@ app.get('/', (req, res) => {
             console.log(data)
             if (err || data == null) {
                 res.statusCode = 204 //no content
-                r.result = ResultsEnum.outDB
+                r.value = ResultsEnum.error
             } else {
                 r.str = data
                 res.statusCode = 200
-                r.result = ResultsEnum.inDB
+                r.value = ResultsEnum.inDB
             }
             res.send(r);
         });
@@ -110,7 +92,7 @@ app.listen(port, function () {
 
 class Respond {
     str
-    result
+    value
 }
 
 class Request {
