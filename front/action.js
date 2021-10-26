@@ -1,14 +1,22 @@
 const localHost = 'http://127.0.0.1';
-const port = '3000';
+const port = '8080';
 
 const makePostRequest = async (path, data) => {
     // return await axios.post(localHost + path, data);
-    return await axios.post(path, data);
+    return await axios.post(path, {
+        params:{
+            "str": data
+        },
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    });
 };
 
-const makeGetRequest = async (path) => {
-    return await axios.get(path);
-
+const makeGetRequest = async (path, hashedStr) => {
+    return await axios.get(path, {
+        params:{
+            "hashedString": hashedStr
+        }
+    });
 };
 
 async function sha256(message) {
@@ -43,7 +51,6 @@ async function set(GoOrNode) {
     document.getElementById("output1").value = hashedStr
 
     const jsonReq = {
-        "requestType": 0,
         "str": toStrX,
         "hashedString": hashedStr,
     }
@@ -52,19 +59,20 @@ async function set(GoOrNode) {
         case "node":
             console.log(GoOrNode)
             var path = localHost + ':' + port;
-            var extention = '/node/sha256';
+            var extention = '/sha256';
             var extention = '';
             var fpath = path + extention
             console.log(fpath)
             console.log("post request 58")
-            var res = await makePostRequest(fpath, jsonReq)
+            var res = await makePostRequest(fpath, toStrX)
             break
         case "go":
             var path = localHost + ':' + port;
-            var extention = '/go/sha256';
+            var extention = '/sha256';
             var fpath = path + extention
-            console.log("post request 64")
-            var res = await makePostRequest(fpath, jsonReq)
+            console.log(jsonReq)
+            var res = await makePostRequest(fpath, toStrX)
+            console.log(res)
             break
         default:
             console.log("Not a valid path(set)")
@@ -79,23 +87,22 @@ async function get(GoOrNode) {
     id = "inputFromSha"
     const hashedStr = document.getElementById(id).value
     const getRequest = {
-        "requestType": 1,
         "str": "",
         "hashedString": hashedStr,
     }
     switch (GoOrNode) {
         case "node":
             var path = localHost + ':' + port;
-            var extention = '/node/sha256';
-            var extention = '';
+            var extention = '/sha256';
+            var extention = '/a';
             var fpath = path + extention
-            var res = await makePostRequest(fpath, getRequest)
+            var res = await makeGetRequest(fpath, hashedStr)
             break
         case "go":
             var path = localHost + ':' + port;
-            var extention = '/go/sha256';
+            var extention = '/sha256';
             var fpath = path + extention
-            var res = await makeGetRequest(fpath)
+            var res = await makeGetRequest(fpath, hashedStr)
             break
         default:
             console.log("Not a valid path(get)")
