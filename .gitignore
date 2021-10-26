@@ -16,3 +16,4 @@
 
 back-end-golang-local/*
 node-modules/*
+locust/mine.py
