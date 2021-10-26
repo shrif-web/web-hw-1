@@ -1,1 +1,1 @@
-** Make sure that 
+**Make sure that you change `nginx/myserver` properly to point to front folder by absolute path correctly**
