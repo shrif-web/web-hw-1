@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -23,9 +23,10 @@ var (
 
 func SetNewData(client redis.Client, value string) string {
 	if len([]rune(value)) >= 8 {
-		h := sha1.New()
+		h := sha256.New()
 		h.Write([]byte(value))
 		sha1_hash := hex.EncodeToString(h.Sum(nil))
+
 		client.Set(ctx, sha1_hash, value, 0).Err()
 		return sha1_hash
 	} else {
