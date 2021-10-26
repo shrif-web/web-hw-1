@@ -1,54 +1,48 @@
 const express = require("express");
 const bodyParser = require("body-parser")
 const redis = require("redis")
+const cors = require("cors")
 const crypto = require("crypto")
-// sajad added this////////////////////
-var cors = require('cors')
-var path = require('path');
+const path = require("path")
 const app = express();
-app.use(cors())
-// sajjad added above code ////////////
+app.use(cors());
 
 const client = redis.createClient()
 
 const ResultsEnum = Object.freeze({
     shortString: 0,
     inDB: 1,
-    outDB: 2
+    outDB: 2,
+    error: 3
 })
 const RequestEnum = Object.freeze({
     hashForSave: 0,
     getDB: 1
 })
-client.set("key", "valuee", redis.print);
-client.get("key", redis.print);
 
-// New app using express module
 app.use(bodyParser.json())
-// app.use(express.json());
-
+//temporary should be done by nginx
 app.get("/", function (req, res) {
-    res.sendFile('/front/struct.html', {root: path.resolve(__dirname, '..')});
+    res.sendFile(__dirname + "/struct.html");
 });
 app.get('/action.js', function(req, res) {
-    res.sendFile('/front/action.js', {root: path.resolve(__dirname, '..')});
+    res.sendFile(__dirname + "/" + "action.js");
 });
 app.get('/style.css', function(req, res) {
-    res.sendFile('/front/style.css', {root: path.resolve(__dirname, '..')}); 
+    res.sendFile(__dirname + "/" + "style.css");
 });
 
 app.post("/", function (req, res) {
-    console.log(req.url)
-    let request = req.body
-    request.requestType = parseInt(request.requestType)
-    console.log("*****", request)
-    let r = new Respond();
+    try {
 
-    if (request.requestType === RequestEnum.hashForSave) {
+        let request = req.body
+        console.log(request)
+        let r = new Respond();
         console.log(req.body)
         let hash;
         if (req.body.str.toString().length < 8) {
             r.result = ResultsEnum.shortString
+            res.statusCode = 411 //length required
             res.send(r)
         } else {
             hash = crypto.createHash('sha256').update(request.str).digest('base64');
@@ -62,27 +56,54 @@ app.post("/", function (req, res) {
                     r.result = ResultsEnum.inDB
                     client.set(request.hashedString, request.str, redis.print)
                 }
+                res.statusCode = 201
                 res.send(r);
             });
         }
-    } else if (request.requestType === RequestEnum.getDB) {
+    }
+    catch (e) {
+        sendBadRequest(res)
+    }
+});
+app.get('/a', (req, res) => {
+    a = 1
+    try {
+        let request = req.query
+        console.log(request)
+        let r = new Respond();
         client.get(request.hashedString, function (err, data) {
             // data is null if the key doesn't exist
             console.log(data)
-            if (err||data == null) {
+            if (err || data == null) {
+                res.statusCode = 204 //no content
                 r.result = ResultsEnum.outDB
             } else {
                 r.str = data
+                res.statusCode = 200
                 r.result = ResultsEnum.inDB
             }
             res.send(r);
         });
+    } catch (e) {
+        sendBadRequest(res)
     }
-});
+})
+
+function sendBadRequest(res) {
+    res.statusCode = 400
+    let r = new Respond();
+    r.result = ResultsEnum.error
+    res.send(r)
+}
+
+app.use((req, res, next) => {
+    res.status(404).send("<h1>Page not found on the server</h1>")
+})
 
 app.listen(3000, function () {
     console.log("server is running on port 3000");
 })
+
 
 class Respond {
     str
@@ -90,7 +111,6 @@ class Respond {
 }
 
 class Request {
-    requestType
     str
     hashedString
 }
