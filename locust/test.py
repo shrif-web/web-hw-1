@@ -17,21 +17,47 @@ class WebsiteUser(HttpUser):
     wait_time = wait_time.constant(1)
 
     @task
-    def get_golang(self):
+    def get_golang1(self):
         key = id_generator()
-        self.client.get(self.urlGolang + f"?hashedString={key}",name="golang get")
+        self.client.get(self.urlGolang + f"?hashedString={key}",name="golang get1")
 
     @task
-    def get_nodejs(self):
+    def get_golang2(self):
         key = id_generator()
-        self.client.get(self.urlNode + f"?hashedString={key}",name="node get")
+        self.client.get(self.urlGolang + f"?hashedString={key}",name="golang get2")
+    @task
+    def get_golang3(self):
+        key = id_generator()
+        self.client.get(self.urlGolang + f"?hashedString={key}",name="golang get3")
+    @task
+    def get_nodejs1(self):
+        key = id_generator()
+        self.client.get(self.urlNode + f"?hashedString={key}",name="node get1")
 
     @task
-    def post_golang(self):
-        sha = id_generator()
-        self.client.post(self.urlGolang, json={"str":sha},name="golang post")
+    def get_nodejs2(self):
+        key = id_generator()
+        self.client.get(self.urlNode + f"?hashedString={key}",name="node get2")
+
 
     @task
-    def post_node(self):
+    def post_golang1(self):
         sha = id_generator()
-        self.client.post(self.urlNode, json={"str":sha},name="node post")
+        self.client.post(self.urlGolang, json={"str":sha},name="golang post1")
+    @task
+    def post_golang2(self):
+        sha = id_generator()
+        self.client.post(self.urlGolang, json={"str":sha},name="golang post2")
+    @task
+    def post_golang3(self):
+        sha = id_generator()
+        self.client.post(self.urlGolang, json={"str":sha},name="golang post3")
+
+    @task
+    def post_node1(self):
+        sha = id_generator()
+        self.client.post(self.urlNode, json={"str":sha},name="node post1")
+    @task
+    def post_node2(self):
+        sha = id_generator()
+        self.client.post(self.urlNode, json={"str":sha},name="node post2")
