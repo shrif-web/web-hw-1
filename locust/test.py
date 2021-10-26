@@ -19,19 +19,19 @@ class WebsiteUser(HttpUser):
     @task
     def get_golang(self):
         key = id_generator()
-        self.client.get(self.urlGolang + f"/hashedString?hashedString={key}")
+        self.client.get(self.urlGolang + f"?hashedString={key}",name="golang get")
 
     @task
     def get_nodejs(self):
         key = id_generator()
-        self.client.get(self.urlNode + f"/hashedString?hashedString={key}")
+        self.client.get(self.urlNode + f"?hashedString={key}",name="node get")
 
     @task
     def post_golang(self):
         sha = id_generator()
-        self.client.post(self.urlGolang, json={'str': sha})
+        self.client.post(self.urlGolang, json={"str":sha},name="golang post")
 
     @task
-    def post_golang(self):
+    def post_node(self):
         sha = id_generator()
-        self.client.post(self.urlNode, json={'str': sha})
+        self.client.post(self.urlNode, json={"str":sha},name="node post")
