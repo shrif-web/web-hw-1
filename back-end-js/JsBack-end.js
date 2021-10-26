@@ -7,6 +7,9 @@ const path = require("path")
 const app = express();
 app.use(cors());
 
+
+const port = 8080
+
 const client = redis.createClient()
 
 const ResultsEnum = Object.freeze({
@@ -22,15 +25,15 @@ const RequestEnum = Object.freeze({
 
 app.use(bodyParser.json())
 //temporary should be done by nginx
-app.get("/", function (req, res) {
-    res.sendFile(__dirname + "/struct.html");
-});
-app.get('/action.js', function(req, res) {
-    res.sendFile(__dirname + "/" + "action.js");
-});
-app.get('/style.css', function(req, res) {
-    res.sendFile(__dirname + "/" + "style.css");
-});
+// app.get("/", function (req, res) {
+//     res.sendFile(__dirname + "/struct.html");
+// });
+// app.get('/action.js', function(req, res) {
+//     res.sendFile(__dirname + "/" + "action.js");
+// });
+// app.get('/style.css', function(req, res) {
+//     res.sendFile(__dirname + "/" + "style.css");
+// });
 
 app.post("/", function (req, res) {
     try {
@@ -65,7 +68,7 @@ app.post("/", function (req, res) {
         sendBadRequest(res)
     }
 });
-app.get('/a', (req, res) => {
+app.get('/', (req, res) => {
     a = 1
     try {
         let request = req.query
@@ -100,8 +103,8 @@ app.use((req, res, next) => {
     res.status(404).send("<h1>Page not found on the server</h1>")
 })
 
-app.listen(3000, function () {
-    console.log("server is running on port 3000");
+app.listen(port, function () {
+    console.log("server is running on port", port);
 })
 
 
